@@ -15,14 +15,15 @@ try{
 render=new BrowserWindow({show:false,width,height,frame:false,transparent:false,webPreferences:{offscreen:true,nodeIntegration:false,contextIsolation:true,webSecurity:true,backgroundThrottling:false}});
 await render.loadURL(pathToFileURL(file).href);
 const hasClock=await render.webContents.executeJavaScript("typeof window.drugoRenderAt === 'function'");
-if(!hasClock)throw Error('El HTML necesita window.drugoRenderAt(ms). La exportación genérica no está implementada.');
+const startTime=Date.now();
+if(hasClock)await render.webContents.executeJavaScript('window.__drugoDurationMs='+seconds*1000);
 const args=['-y','-f','image2pipe','-vcodec','mjpeg','-r',String(fps),'-i','pipe:0','-an','-c:v','libx264','-preset','veryfast','-crf','18','-pix_fmt','yuv420p','-movflags','+faststart',save.filePath];
 proc=spawn(ffmpegPath(),args,{windowsHide:true,stdio:['pipe','ignore','pipe']});let stderr='';proc.stderr.on('data',b=>{stderr=(stderr+b.toString()).slice(-5000)});
 const done=new Promise((resolve,reject)=>{proc.on('error',reject);proc.on('close',code=>code===0?resolve():reject(Error('FFmpeg terminó con código '+code+': '+stderr)))});
 const total=seconds*fps;
 for(let i=0;i<total;i++){
 const ms=Math.round(i*1000/fps);
-await render.webContents.executeJavaScript('window.drugoRenderAt('+ms+')');
+if(hasClock){await render.webContents.executeJavaScript('window.drugoRenderAt('+ms+')')}else{const remaining=ms-(Date.now()-startTime);if(remaining>0)await new Promise(resolve=>setTimeout(resolve,remaining));}
 const frame=await render.webContents.capturePage();
 const jpeg=frame.toJPEG(95);
 if(!proc.stdin.write(jpeg))await new Promise((resolve,reject)=>{proc.stdin.once('drain',resolve);proc.stdin.once('error',reject)});

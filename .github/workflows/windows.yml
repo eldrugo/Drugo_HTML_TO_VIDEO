@@ -1,0 +1,33 @@
+name: Windows instalable y portable (manual)
+on:
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: drugo-html-to-video-windows
+  cancel-in-progress: false
+jobs:
+  windows:
+    runs-on: windows-latest
+    timeout-minutes: 45
+    defaults:
+      run:
+        working-directory: desktop
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Instalar dependencias
+        run: npm install --no-audit --no-fund
+      - name: Crear instalador y portable
+        run: npm run dist:win
+        env:
+          CSC_IDENTITY_AUTO_DISCOVERY: 'false'
+      - name: Publicar exclusivamente en Releases
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $tag = "windows-${{ github.run_id }}-${{ github.run_attempt }}"
+          gh release create $tag (Get-ChildItem desktop/dist/*.exe | ForEach-Object FullName) --repo "${{ github.repository }}" --target "${{ github.sha }}" --title "DRUGO HTML TO VIDEO Windows ${{ github.run_number }}" --notes "Windows 11 x64: instalable y portable. Versión experimental, exportación sin audio. No se utilizan Actions Artifacts." --prerelease

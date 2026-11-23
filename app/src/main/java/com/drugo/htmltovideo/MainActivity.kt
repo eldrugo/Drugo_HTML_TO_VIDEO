@@ -11,7 +11,6 @@ import android.media.MediaFormat
 import android.media.MediaMuxer
 import android.net.Uri
 import android.os.Bundle
-import android.os.SystemClock
 import android.provider.MediaStore
 import android.view.View
 import android.view.ViewGroup
@@ -21,13 +20,11 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import android.widget.ScrollView
 import android.widget.Spinner
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import android.text.InputType
-import org.json.JSONObject
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 import kotlin.math.roundToInt
@@ -174,7 +171,7 @@ class MainActivity : Activity() {
                 exportButton.isEnabled = true
                 status.text = "Este HTML necesita un controlador de tiempo (drugoRenderAt) para exportación sincronizada."
             } else {
-                Thread { encode(seconds) }.start()
+                web.postDelayed({ Thread { encode(seconds) }.start() }, 350)
             }
         }
     }
@@ -191,6 +188,8 @@ class MainActivity : Activity() {
                         c.drawColor(android.graphics.Color.BLACK)
                         web.draw(c)
                         success = true
+                    } catch (_: Exception) {
+                        success = false
                     } finally { latch.countDown() }
                 }
             } catch (_: Exception) { latch.countDown() }

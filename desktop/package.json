@@ -49,8 +49,11 @@
     "nsis": {
       "oneClick": false,
       "allowToChangeInstallationDirectory": true,
-      "createDesktopShortcut": true
+      "createDesktopShortcut": true,
+      "artifactName": "DRUGO-HTML-TO-VIDEO-Setup-${version}-${arch}.${ext}"
     },
-    "artifactName": "DRUGO-HTML-TO-VIDEO-${version}-${arch}.${ext}"
+    "portable": {
+      "artifactName": "DRUGO-HTML-TO-VIDEO-Portable-${version}-${arch}.${ext}"
+    }
   }
 }

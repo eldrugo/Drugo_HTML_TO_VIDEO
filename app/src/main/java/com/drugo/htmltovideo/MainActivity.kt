@@ -264,8 +264,9 @@ class MainActivity : Activity() {
                 codec.queueInputBuffer(inputIndex, 0, videoW * videoH * 3 / 2,
                     frame.toLong() * 1_000_000L / fps, 0)
                 drain(false)
-                if (frame % 15 == 0) {
-                    runOnUiThread { status.text = "Exportando: ${frame + 1}/${frames} fotogramas" }
+                if (frame % 90 == 0 || frame == frames - 1) {
+                    val progress = frame + 1
+                    runOnUiThread { status.text = "Exportando: ${progress}/${frames} fotogramas" }
                 }
             }
             var eosIndex = codec.dequeueInputBuffer(10000)

@@ -21,3 +21,9 @@ npm start
 ## Compilar en GitHub
 
 Actions → **Windows instalable y portable (manual)** → Run workflow. Se publican los dos EXE en Releases, sin upload-artifact ni caché de Actions. La compilación sí consume minutos de Actions.
+
+## Audio en la versión 0.2
+
+Se pueden añadir manualmente hasta 12 pistas MP3/WAV/M4A/AAC/OGG/FLAC. Cada pista tiene tiempo de inicio (segundos) y volumen (0 a 2). FFmpeg mezcla las pistas, recorta al tiempo del vídeo y codifica AAC 192 kb/s en el MP4. La sincronización es respecto al tiempo de fotograma, no respecto a la reproducción real del navegador.
+
+**No se captura automáticamente** el audio generado internamente por speechSynthesis, Web Audio, ni elementos HTML audio/video. Para incluir narración TTS, exportar o generar previamente un archivo de audio y añadirlo como pista. Los efectos requieren archivos separados o una mezcla previa. Si la animación se captura en modo tiempo real y el equipo no mantiene el FPS, puede haber desfase entre movimiento y sonido.
